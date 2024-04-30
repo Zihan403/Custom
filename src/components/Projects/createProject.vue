@@ -4,7 +4,7 @@ import { projectRef } from '@/firebaseConfig';
 import { ref } from 'vue';
 import { doc, getDoc, updateDoc, setDoc } from '@firebase/firestore';
 import { useFirebaseStorage, useStorageFile } from 'vuefire';
-import {ref as storageRef} from 'firebase/storage';
+import { ref as storageRef, getDownloadURL } from 'firebase/storage';
 import { useFileDialog } from '@vueuse/core'
 
 const auth = getAuth();
@@ -15,17 +15,19 @@ const description = ref('');
 const numberOfMembers = ref('');
 const skillsNeeded = ref('');
 const deadline = ref('');
+const projectImage = ref('');
 const storage = useFirebaseStorage();
 const fileName = ref('');
-const {files, open, reset} = useFileDialog();
+const { files, open, reset } = useFileDialog();
 const projectPictureRef = storageRef(storage, 'projectPictures/' + uid);
-const {url,uploadProgress, uploadError, uploadTask, upload} = useStorageFile(projectPictureRef);
+const { url, uploadTask, upload } = useStorageFile(projectPictureRef);
 auth.onAuthStateChanged((user) => {
     if (!user) {
         router.push('/login');
     }
 });
 const createProject = async () => {
+    await uploadPicture();
     await setDoc(doc(projectRef), {
         creatorId: uid,
         coverPhoto: coverPhoto.value,
@@ -33,7 +35,8 @@ const createProject = async () => {
         description: description.value,
         numberOfMembers: numberOfMembers.value,
         skillsNeeded: skillsNeeded.value,
-        deadline: deadline.value
+        deadline: deadline.value,
+        projectImage: projectImage.value,
     });
     alert('Project created successfully');
     coverPhoto.value = '';
@@ -42,25 +45,16 @@ const createProject = async () => {
     numberOfMembers.value = '';
     skillsNeeded.value = '';
     deadline.value = '';
-    
 }
 async function uploadPicture() {
-  const data = files.value?.item(0)
-  if (data) {
-    fileName.value = data.name;
-    upload(data)
-    await uploadTask.value.then(() => {
-      console.log('File uploaded successfully');
-      const docRef = doc(userRef, uid);
-      updateDoc(docRef, {
-        projectPicture: url.value
-      });
-      console.log('url:', url.value)
-    });
-  
-  }
-
- 
+    const data = files.value?.item(0)
+    if (data) {
+        fileName.value = data.name;
+        upload(data)
+        getDownloadURL(projectPictureRef).then((url) => {
+            projectImage.value = url;
+        });
+    }
 }
 
 </script>
@@ -69,14 +63,25 @@ async function uploadPicture() {
         <h1>Create New Project</h1>
 
         <form class="form" @submit.prevent="createProject">
-            <div class="form-group">
-                <label for="coverPhoto">Cover Photo</label>
-                <input type="file" class="form-control" id="coverPhoto" />
-            </div>
-            <div class ='projectImage'>
+
+            <div class='projectImage'>
                 <label for="coverPhoto">Project Image</label>
-                <img :src="coverPhoto" alt="Project Image" />
+                <img v-if="projectImage" :src="projectImage" alt="Project Image" />
             </div>
+            <fieldset :disabled="!!uploadTask">
+                <button type="button" @click="open({ accept: 'image/*', multiple: false })"
+                    class="btn btn-primary mt-3">
+                    <template v-if="files?.length === 1">
+                        <div class="selected-file">
+                            <span class="file-name" title="{{ files.item(0).name }}">Selected : {{ files.item(0).name
+                                }}</span>
+                            <span class="file-actions" @click="open({ accept: 'image/*', multiple: false })">
+                                Change</span>
+                        </div>
+                    </template>
+                    <template v-else>Change Profile Picture</template>
+                </button>
+            </fieldset>
             <div class="form-group">
                 <label for="title">Title</label>
                 <input v-model="title" type="text" class="form-control" id="title" />
@@ -116,14 +121,17 @@ async function uploadPicture() {
 }
 
 .container h1 {
-    color: #000408; /* replace with your desired color */
+    color: #000408;
+    /* replace with your desired color */
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    width: 30%; /* reduce the width of the form */
-    margin: 0 auto; /* center the form horizontally */
+    width: 30%;
+    /* reduce the width of the form */
+    margin: 0 auto;
+    /* center the form horizontally */
     background-color: rgb(170, 9, 9);
     padding: 20px;
     border-radius: 10px;
@@ -146,7 +154,8 @@ async function uploadPicture() {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
-    width: 100%; /* make the input fields take up the full width of the form */
+    width: 100%;
+    /* make the input fields take up the full width of the form */
 }
 
 .btn {

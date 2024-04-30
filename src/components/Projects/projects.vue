@@ -18,7 +18,7 @@ const fetchAllProjects = async () => {
       id: projectId,
       title: projectData.title,
       description: projectData.description,
-      image: projectData.coverPhoto,
+      projectImage: projectData.projectImage,
       item1: projectData.numberOfMembers,
       item2: projectData.skillsNeeded,
       item3: projectData.deadline,
@@ -36,10 +36,10 @@ const createProject = () => {
 </script>
 
 <template>
-    <button @click="createProject" class="create-project-btn">Create Project</button>
+  <button @click="createProject" class="create-project-btn">Create Project</button>
   <div v-if="projects.length != 0">
     <div v-for="project in projects" :key="project.id" class="card" style="width: 18rem;">
-      <img :src="project.image" class="card-img-top" alt="Project Image">
+      <img :src="project.projectImage" class="card-img-top" alt="Project Image">
       <div class="card-body">
         <h5 class="card-title">{{ project.title }}</h5>
         <p class="card-text">{{ project.description }}</p>
@@ -65,7 +65,7 @@ const createProject = () => {
   top: 0.5;
   right: 0;
   margin: 20px;
-  
+
 }
 
 .create-project-btn:hover {
