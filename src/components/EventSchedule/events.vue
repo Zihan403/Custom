@@ -55,12 +55,14 @@ function getEventLink(eventId) {
 
 h1.gradient-text {
    
-color: #800000;
-background-image: -webkit-linear-gradient(0deg, #800000 0%, #dc143c 50%, #eb4667 100%);
+
+background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #9cc6fa 50%, #fdf8f9 100%);
 background-clip: text;
 -webkit-background-clip: text;
 color: transparent;
 -webkit-text-fill-color: transparent;
+text-align: center;
+  margin: 20px 0;
 }
 
 .calendar {
@@ -76,11 +78,11 @@ color: transparent;
 }
 
 .event-card {
-    background: rgb(170, 9, 9);
+    background: rgb(120, 119, 119);
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #fff;
+    
+    color: #e8e7e7;
     text-decoration: none;
     cursor: pointer;
 }

@@ -91,55 +91,69 @@ async function uploadPicture() {
 </script>
 <template>
   <div v-if="loaded" class="container my-5">
-    <div class="text-center mb-4">
-      <img :src="profilePicture" alt="Profile Picture" class="rounded-circle" style="width: 200px; height: 200px;">
-      <div>
-        <fieldset :disabled="!!uploadTask">
-          <button type="button" @click="open({ accept: 'image/*', multiple: false })" class="btn btn-primary mt-3">
-            <template v-if="files?.length === 1">
-              <div class="selected-file">
-                <span class="file-name" title="{{ files.item(0).name }}">Selected : {{ files.item(0).name }}</span>
-                <span class="file-actions" @click="open({ accept: 'image/*', multiple: false })"> Change</span>
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-4">
+        <!-- Profile Picture Section -->
+        <div class="text-center mb-4">
+          <img :src="profilePicture" alt="Profile Picture" class="rounded-circle img-fluid">
+          <div>
+            <fieldset :disabled="!!uploadTask">
+              <button type="button" @click="open({ accept: 'image/*', multiple: false })" class="btn btn-primary mt-3">
+                <template v-if="files?.length === 1">
+                  <div class="selected-file">
+                    <span class="file-name" title="{{ files.item(0).name }}">Selected : {{ files.item(0).name }}</span>
+                    <span class="file-actions" @click="open({ accept: 'image/*', multiple: false })"> Change</span>
+                  </div>
+                </template>
+                <template v-else>Change Profile Picture</template>
+              </button>
+              <button v-if="files" @click='uploadPicture' class="btn btn-success mt-3 mx-3">Save</button>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-8">
+        <!-- User Data Form -->
+        <form>
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input id="email" type="text" class="form-control" :placeholder="email" disabled>
               </div>
-            </template>
-            <template v-else>Change Profile Picture</template>
-          </button>
-          <button v-if="files" @click='uploadPicture' class="btn btn-success mt-3 mx-3">Save</button>
-        </fieldset>
+              <div class="mb-3">
+                <label for="username" class="form-label">Username:</label>
+                <input id="username" type="text" class="form-control" :placeholder="username" v-model="username"
+                  :disabled="!updating" data-bs-toggle="tooltip" title="Enter your username">
+              </div>
+              <div class="mb-3">
+                <label for="about" class="form-label">About:</label>
+                <textarea id="about" class="form-control" v-model="about" :disabled="!updating" data-bs-toggle="tooltip"
+                  title="Tell us about yourself"></textarea>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="mb-3">
+                <label for="contact" class="form-label">Contact:</label>
+                <input id="contact" type="number" class="form-control" :placeholder="contact" v-model="contact"
+                  :disabled="!updating" data-bs-toggle="tooltip" title="Enter your contact number">
+              </div>
+              <div class="mb-3">
+                <label for="skills" class="form-label">Skills:</label>
+                <input id="skills" type="text" class="form-control" :placeholder="skills" v-model="skills" :disabled="!updating"
+                  data-bs-toggle="tooltip" title="Enter your skills">
+              </div>
+              <div class="mb-3">
+                <label for="projects" class="form-label">Projects:</label>
+                <input id="projects" type="text" class="form-control" :placeholder="projects" v-model="projects"
+                  :disabled="!updating" data-bs-toggle="tooltip" title="Enter your projects">
+              </div>
+            </div>
+          </div>
+          <button v-if="!updating" @click="updating = true" class="btn btn-primary">Update</button>
+          <button v-if="updating" @click="updateUserData" class="btn btn-success">Save</button>
+        </form>
       </div>
     </div>
-    <form>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email:</label>
-        <input id="email" type="text" class="form-control" :placeholder="email" disabled>
-      </div>
-      <div class="mb-3">
-        <label for="username" class="form-label">Username:</label>
-        <input id="username" type="text" class="form-control" :placeholder="username" v-model="username"
-          :disabled="!updating" data-bs-toggle="tooltip" title="Enter your username">
-      </div>
-      <div class="mb-3">
-        <label for="about" class="form-label">About:</label>
-        <textarea id="about" class="form-control" v-model="about" :disabled="!updating" data-bs-toggle="tooltip"
-          title="Tell us about yourself"></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="contact" class="form-label">Contact:</label>
-        <input id="contact" type="number" class="form-control" :placeholder="contact" v-model="contact"
-          :disabled="!updating" data-bs-toggle="tooltip" title="Enter your contact number">
-      </div>
-      <div class="mb-3">
-        <label for="skills" class="form-label">Skills:</label>
-        <input id="skills" type="text" class="form-control" :placeholder="skills" v-model="skills" :disabled="!updating"
-          data-bs-toggle="tooltip" title="Enter your skills">
-      </div>
-      <div class="mb-3">
-        <label for="projects" class="form-label">Projects:</label>
-        <input id="projects" type="text" class="form-control" :placeholder="projects" v-model="projects"
-          :disabled="!updating" data-bs-toggle="tooltip" title="Enter your projects">
-      </div>
-      <button v-if="!updating" @click="updating = true" class="btn btn-primary">Update</button>
-      <button v-if="updating" @click="updateUserData" class="btn btn-success">Save</button>
-    </form>
   </div>
 </template>
