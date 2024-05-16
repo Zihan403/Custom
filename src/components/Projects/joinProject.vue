@@ -1,59 +1,48 @@
 
-    <template>
-        <h1>Join</h1>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <form @submit.prevent="handleSubmit">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" v-model="name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="semester" class="form-label">Semester</label>
-                            <select class="form-control" id="semester" v-model="semester">
-                                <option value="1">Semester 1</option>
-                                <option value="2">Semester 2</option>
-                                <option value="3">Semester 3</option>
-                                <option value="4">Semester 4</option>
-                                <option value="5">Semester 5</option>
-                                <option value="6">Semester 6</option>
-                                <option value="7">Semester 7</option>
-                                <option value="8">Semester 8</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="department" class="form-label">Department</label>
-                            <select class="form-control" id="department" v-model="department">
-                                <option value="IT">IT</option>
-                                <option value="CS">CS</option>
-                                <option value="EE">EE</option>
-                                <option value="ME">ME</option>
-                                <option value="CE">CE</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="reason" class="form-label">Why do you want to join?</label>
-                            <textarea class="form-control" id="reason" v-model="reason"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contribution" class="form-label">How can you contribute in the project?</label>
-                            <textarea class="form-control" id="contribution" v-model="contribution"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="availability" class="form-label">Availability</label>
-                            <input type="text" class="form-control" id="availability" v-model="availability">
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="shareProfile" v-model="shareProfile">
-                            <label class="form-check-label" for="shareProfile">Share profile information</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
+<template>
+    <div class="container">
+        <h1 class="text-center">Join</h1>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <form @submit.prevent="handleSubmit">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" v-model="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select class="form-control" id="semester" v-model="semester" required>
+                            <option v-for="n in 8" :value="n">Semester {{ n }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select class="form-control" id="department" v-model="department" required>
+                            <option v-for="dept in ['IT', 'CS', 'EE', 'ME', 'CE']" :value="dept">{{ dept }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Why do you want to join?</label>
+                        <textarea class="form-control" id="reason" v-model="reason" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="contribution">How can you contribute in the project?</label>
+                        <textarea class="form-control" id="contribution" v-model="contribution" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="availability">Availability</label>
+                        <input type="text" class="form-control" id="availability" v-model="availability" required>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="shareProfile" v-model="shareProfile">
+                        <label class="form-check-label" for="shareProfile">Share profile information</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
             </div>
         </div>
-    </template>
+    </div>
+</template>
 
     <script setup>
     import { ref } from 'vue';
@@ -133,3 +122,20 @@
 
             
     </script>
+    <style scoped>
+    @media (min-width: 576px) {
+        form {
+            max-width: 540px;
+        }
+    }
+    @media (min-width: 768px) {
+        form {
+            max-width: 720px;
+        }
+    }
+    @media (min-width: 992px) {
+        form {
+            max-width: 960px;
+        }
+    }
+    </style>
