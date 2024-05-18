@@ -6,6 +6,8 @@ import { doc, getDocs, updateDoc } from '@firebase/firestore';
 import { useRouter } from 'vue-router';
 
 const projects = ref([]);
+const myProjects = ref([]);
+const ongoingProjects = ref([]);
 const auth = getAuth();
 const uid = auth.currentUser.uid;
 const router = useRouter();
@@ -14,16 +16,25 @@ const fetchAllProjects = async () => {
   querySnapshot.forEach((doc) => {
     const projectId = doc.id;
     const projectData = doc.data();
-    projects.value.push({
+    const project = {
       id: projectId,
       title: projectData.title,
       description: projectData.description,
       projectImage: projectData.projectImage,
-      item1: projectData.numberOfMembers,
-      item2: projectData.skillsNeeded,
-      item3: projectData.deadline,
-      link1: projectData.link1
-    });
+      numberOfMembers: projectData.numberOfMembers,
+      skillsNeeded: projectData.skillsNeeded,
+      deadline: projectData.deadline,
+      members: projectData.members,
+      creatorId: projectData.creatorId
+    };
+
+    projects.value.push(project);
+
+    if (project.members.some(member => member.id === uid) || project.creatorId === uid) {
+      myProjects.value.push(project);
+    } else {
+      ongoingProjects.value.push(project);
+    }
   });
 }
 
@@ -39,26 +50,44 @@ const createProject = () => {
   <div class="create-project-container">
     <button @click="createProject" class="create-project-btn">Create Project</button>
   </div>
+  <h1 class="gradient-text">My Projects</h1>
+
+  <div class="container" v-if="myProjects.length != 0">
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in myProjects" :key="project.id">
+        <a :href="'project/' + project.id" class="card-link">
+          <div class="card mb-4 scaled-card">
+            <img :src="project.projectImage" class="card-img-top" alt="Project Image">
+            <div class="card-body">
+              <h5 class="card-title">{{ project.title }}</h5>
+              <p class="card-text">{{ project.description }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <h1 class="gradient-text">Ongoing Projects</h1>
   <h3 class="gradient-text">Join a project to collaborate with other members!</h3>
-  
-  <div class="container" v-if="projects.length != 0">
+
+  <div class="container" v-if="ongoingProjects.length != 0">
     <div class="row">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in projects" :key="project.id">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in ongoingProjects" :key="project.id">
         <div class="card mb-4 scaled-card">
           <img :src="project.projectImage" class="card-img-top" alt="Project Image">
           <div class="card-body">
             <h5 class="card-title">{{ project.title }}</h5>
             <p class="card-text">{{ project.description }}</p>
+            <p class="card-text">{{ project.skillsNeeded }}</p>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">{{ project.item1 }}</li>
-            <li class="list-group-item">{{ project.item2 }}</li>
-            <li class="list-group-item">{{ project.item3 }}</li>
-          </ul>
+
           <div class="card-body">
-            <a :href="project.link1" class="card-link">Card link</a>
-            <a :href="'join/' + project.id" class="card-link">Join</a>
+            <a :href="'join/' + project.id" class="card-link">
+              <button class="btn">
+                Join
+              </button>
+            </a>
           </div>
         </div>
       </div>
@@ -67,8 +96,18 @@ const createProject = () => {
 </template>
 
 <style scoped>
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #000306;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 h1.gradient-text {
-   
+
 
   background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #a8cdf9 50%, #fdf8f9 100%);
   background-clip: text;
@@ -77,19 +116,23 @@ h1.gradient-text {
   -webkit-text-fill-color: transparent;
   text-align: center;
   margin: 20px 0;
-  }
-  h3.gradient-text {
- 
+}
 
-      background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #d6e6f9 50%, #fdf8f9 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
-      margin: 20px 0;
-      }
+h3.gradient-text {
 
+
+  background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #d6e6f9 50%, #fdf8f9 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin: 20px 0;
+}
+
+a {
+  text-decoration: none;
+}
 
 .create-project-btn {
   border-radius: 50px;
@@ -110,4 +153,3 @@ h1.gradient-text {
   margin: 15px;
 }
 </style>
-

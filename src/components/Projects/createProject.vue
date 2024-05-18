@@ -2,10 +2,11 @@
 import { getAuth } from 'firebase/auth';
 import { projectRef } from '@/firebaseConfig';
 import { ref } from 'vue';
-import { doc, getDoc, updateDoc, setDoc } from '@firebase/firestore';
+import { doc, setDoc, updateDoc } from '@firebase/firestore';
 import { useFirebaseStorage, useStorageFile } from 'vuefire';
 import { ref as storageRef, getDownloadURL } from 'firebase/storage';
-import { useFileDialog } from '@vueuse/core'
+import { useFileDialog } from '@vueuse/core';
+import router from '@/router';
 
 const auth = getAuth();
 const uid = auth.currentUser.uid;
@@ -17,18 +18,19 @@ const skillsNeeded = ref('');
 const deadline = ref('');
 const projectImage = ref('');
 const storage = useFirebaseStorage();
-const fileName = ref('');
 const { files, open, reset } = useFileDialog();
-const projectPictureRef = storageRef(storage, 'projectPictures/' + uid);
-const { url, uploadTask, upload } = useStorageFile(projectPictureRef);
 auth.onAuthStateChanged((user) => {
     if (!user) {
         router.push('/login');
     }
 });
+
 const createProject = async () => {
-    await uploadPicture();
-    await setDoc(doc(projectRef), {
+    // Create a new project document with an auto-generated ID
+    const newProjectRef = doc(projectRef);
+    const projectId = newProjectRef.id;
+
+    await setDoc(newProjectRef, {
         creatorId: uid,
         coverPhoto: coverPhoto.value,
         title: title.value,
@@ -36,8 +38,17 @@ const createProject = async () => {
         numberOfMembers: numberOfMembers.value,
         skillsNeeded: skillsNeeded.value,
         deadline: deadline.value,
+        members: [],
+    });
+
+    // Upload the picture using the project ID
+    await uploadPicture(projectId);
+
+    // Update the project document with the projectImage URL
+    await updateDoc(newProjectRef, {
         projectImage: projectImage.value,
     });
+
     alert('Project created successfully');
     coverPhoto.value = '';
     title.value = '';
@@ -45,15 +56,18 @@ const createProject = async () => {
     numberOfMembers.value = '';
     skillsNeeded.value = '';
     deadline.value = '';
-}
-async function uploadPicture() {
-    const data = files.value?.item(0)
+    projectImage.value = '';
+};
+
+async function uploadPicture(projectId) {
+    const data = files.value?.item(0);
     if (data) {
-        fileName.value = data.name;
-        upload(data)
-        getDownloadURL(projectPictureRef).then((url) => {
-            projectImage.value = url;
-        });
+        const projectPictureRef = storageRef(storage, 'projectPictures/' + projectId + '/' + data.name);
+        const { upload } = useStorageFile(projectPictureRef);
+        await upload(data);
+
+        const url = await getDownloadURL(projectPictureRef);
+        projectImage.value = url;
     }
 }
 

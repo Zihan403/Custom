@@ -11,6 +11,11 @@
   "dependencies": {
     "@firebase/firestore": "^4.6.0",
     "@firebase/storage": "^0.12.4",
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/vue-fontawesome": "^3.0.6",
     "@vueuse/core": "^10.9.0",
     "firebase": "^10.11.0",
     "vue": "^3.4.21",
