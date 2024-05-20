@@ -2,7 +2,7 @@
 import { getAuth } from 'firebase/auth';
 import { projectRef } from '@/firebaseConfig';
 import { ref } from 'vue';
-import { doc, getDoc, updateDoc } from '@firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from '@firebase/firestore';
 import { useRouter } from 'vue-router';
 
 const projectId = window.location.pathname.split('/')[2];
@@ -23,6 +23,7 @@ const checkIfAdmin = async () => {
         console.log("No such document!");
     }
 }
+checkIfAdmin();
 const fetchProject = async () => {
     const docRef = doc(projectRef, projectId);
     const docSnap = await getDoc(docRef);
@@ -43,15 +44,48 @@ const fetchProject = async () => {
     }
 }
 
+const deleteProject = async () => {
+    const docRef = doc(projectRef, projectId);
+    await deleteDoc(docRef);
+    router.push('/projects');
+}
+
 fetchProject();
 
 </script>
 
 <template>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-black" id="exampleModalLabel">Confirm Deletion</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-black">
+                    Are you sure you want to delete this project?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @click="deleteProject">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <div class="container">
-        <div v-if="isAdmin" class="row mt-1">
+        <div v-if="isAdmin" class="row mt-1 justify-content-between">
             <div class="col-md-2">
                 <router-link :to="`/joinRequests/${projectId}`" class="btn btn-primary">View Requests</router-link>
+            </div>
+            <div class="col-md-2 ">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Delete Project
+                </button>
             </div>
         </div>
         <div class="row">

@@ -48,6 +48,30 @@ const getAllPostForThisProject = async () => {
 }
 getAllPostForThisProject();
 
+const dislike = async (postId) => {
+    const docRef = doc(postRef, postId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const postData = docSnap.data();
+        if (!postData.likes.includes(uid)) {
+            return; // User has not liked the post, do nothing
+        }
+        for (let i = 0; i < posts.value.length; i++) {
+            if (posts.value[i].id === postId) {
+                posts.value[i].likesCount = postData.likesCount - 1;
+            }
+        }
+        await updateDoc(docRef, {
+            likesCount: postData.likesCount - 1,
+            likes: postData.likes.filter(id => id !== uid)
+        });
+    } else {
+        console.log("No such document!");
+    }
+
+}
+
 const like = async (postId) => {
     const docRef = doc(postRef, postId);
     const docSnap = await getDoc(docRef);
@@ -55,7 +79,8 @@ const like = async (postId) => {
     if (docSnap.exists()) {
         const postData = docSnap.data();
         if (postData.likes.includes(uid)) {
-            return; // User has already liked the post, do nothing
+            await dislike(postId);
+            return;
         }
 
         for (let i = 0; i < posts.value.length; i++) {

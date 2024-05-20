@@ -11,6 +11,7 @@ const ongoingProjects = ref([]);
 const auth = getAuth();
 const uid = auth.currentUser.uid;
 const router = useRouter();
+
 const fetchAllProjects = async () => {
   const querySnapshot = await getDocs(projectRef);
   querySnapshot.forEach((doc) => {
