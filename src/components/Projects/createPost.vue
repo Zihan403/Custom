@@ -13,6 +13,7 @@ const uid = auth.currentUser.uid;
 const projectId = window.location.pathname.split('/')[2];
 const post = ref("")
 const userName = ref("")
+//again username ta nilam
 const getusername = async () => {
     const docRef = doc(userRef, uid);
     const docSnap = await getDoc(docRef);
@@ -23,6 +24,7 @@ const getusername = async () => {
         console.log("No such document!");
     }
 }
+//function ta call korlam
 getusername();
 const createPost = async () => {
     await setDoc(doc(postRef), {

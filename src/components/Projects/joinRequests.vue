@@ -12,8 +12,10 @@ const auth = getAuth();
 const uid = auth.currentUser.uid;
 const router = useRouter();
 const isAdmin = ref(true);
+//joto join request ase shegula ftech korbo
 const fetchAllJoinRequests = async () => {
     const querySnapshot = await getDocs(joinRequestRef);
+    // ekhane basically shob request anar por filter korlam jate only current project er shob request gula dekhte pai
     querySnapshot.forEach((doc) => {
         const joinRequestId = doc.id;
         const joinRequestData = doc.data();
@@ -34,12 +36,16 @@ const fetchAllJoinRequests = async () => {
         }
     });
 }
-
+//call korlam function
 fetchAllJoinRequests();
+
+//join request approve korar function
 
 const approveJoinRequest = async (joinRequest) => {
     try {
+
         console.log(joinRequest);
+        //project join request duita reference e ansi karon lagbe
         const projectDocumentRef = doc(projectRef, joinRequest.projectId);
         const joinRequestDocumentRef = doc(joinRequestRef, joinRequest.id);
 
@@ -51,7 +57,7 @@ const approveJoinRequest = async (joinRequest) => {
 
         const projectData = projectSnapshot.data();
         const currentMembers = projectData.members || [];
-
+        //first of all members list e new user re add korlam
         await updateDoc(projectDocumentRef, {
             members: [
                 ...currentMembers,
@@ -61,6 +67,7 @@ const approveJoinRequest = async (joinRequest) => {
                 }
             ]
         });
+        //join request theke request shoray dilam karon approve to korsi e
 
         await deleteDoc(joinRequestDocumentRef);
         alert("Approved " + joinRequest.name);

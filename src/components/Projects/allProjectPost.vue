@@ -8,6 +8,8 @@ import router from '@/router';
 const auth = getAuth();
 const uid = auth.currentUser?.uid;
 const userName = ref('');
+
+//ei functionn diye username ta fetch korlam jeta amader new comments e add korte help hobe
 const getUserName = async () => {
     const docRef = doc(userRef, uid);
     const docSnap = await getDoc(docRef);
@@ -18,12 +20,14 @@ const getUserName = async () => {
         console.log("No such document!");
     }
 }
+//ei function er maddhome amra username niye ashlam
 getUserName();
+
 const projectId = window.location.pathname.split('/')[2];
 const posts = ref([]);
 const selectedPost = ref(null);
 const newComment = ref('');
-
+//ei function diye amra project er sob post gula fetch korlam
 const getAllPostForThisProject = async () => {
     const querySnapshot = await getDocs(postRef);
     querySnapshot.forEach((doc) => {
@@ -46,17 +50,17 @@ const getAllPostForThisProject = async () => {
         }
     });
 }
+//ekhane function ta call korlam
 getAllPostForThisProject();
 
+//jodi age like diye thaki tokhon ei function hobe
 const dislike = async (postId) => {
     const docRef = doc(postRef, postId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
         const postData = docSnap.data();
-        if (!postData.likes.includes(uid)) {
-            return; // User has not liked the post, do nothing
-        }
+
         for (let i = 0; i < posts.value.length; i++) {
             if (posts.value[i].id === postId) {
                 posts.value[i].likesCount = postData.likesCount - 1;
@@ -71,25 +75,28 @@ const dislike = async (postId) => {
     }
 
 }
-
+//like deyar function
 const like = async (postId) => {
     const docRef = doc(postRef, postId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
         const postData = docSnap.data();
+        //ekhane check korbo je ei post er likes e amar id ase kina jodi thake tahole dislike korbo
         if (postData.likes.includes(uid)) {
             await dislike(postId);
             return;
         }
-
+        // jodi na thake tahole like korbo , ref er value ta change kortesi
         for (let i = 0; i < posts.value.length; i++) {
             if (posts.value[i].id === postId) {
                 posts.value[i].likesCount = postData.likesCount + 1;
             }
         }
+        // like dile jei change gula hobe database e shegula update korlam
         await updateDoc(docRef, {
             likesCount: postData.likesCount + 1,
+
             likes: [...postData.likes, uid]
         });
     } else {
@@ -97,23 +104,31 @@ const like = async (postId) => {
     }
 }
 
+// eta comment er modal show korbe
 const showCommentsModal = async (post) => {
     selectedPost.value = post;
     newComment.value = '';
-    // Fetch the latest comments if needed
-}
 
+}
+//time ta convert korlam jate milliseconds na dekhay
+const convertToTime = (time) => {
+    const date = new Date(time);
+    return date.toLocaleString();
+}
+//comment add korbe
 const addComment = async () => {
+    //empty comment hoile return korbe
     if (!newComment.value.trim()) {
         return;
     }
     console.log(userName);
     const postDocRef = doc(postRef, selectedPost.value.id);
+    //update doc er maddhome comment add korlam
     await updateDoc(postDocRef, {
         comments: arrayUnion({ userId: uid, userName: userName.value, comment: newComment.value, timestamp: new Date() }),
         commentsCount: selectedPost.value.commentsCount + 1
     });
-
+    //selected post er comments e new comment add korlam,variable er values change kortesi ekhane not database
     selectedPost.value.comments.push({ userId: uid, userName: userName.value, comment: newComment.value, timestamp: new Date() });
     selectedPost.value.commentsCount++;
     newComment.value = '';
@@ -127,7 +142,7 @@ const addComment = async () => {
             <div class="col">
                 <div v-for="post in posts" :key="post.id" class="card mt-2">
                     <div class="card-body">
-                        <h5 class="text-black">{{ post.creatorName }} posted at {{ post.postTime }}</h5>
+                        <h5 class="text-black">{{ post.creatorName }} posted at {{ convertToTime(post.postTime) }}</h5>
                         <p>
                             {{ post.post }}
                         </p>

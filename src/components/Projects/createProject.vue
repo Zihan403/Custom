@@ -24,12 +24,13 @@ auth.onAuthStateChanged((user) => {
         router.push('/login');
     }
 });
+// create project function
 
 const createProject = async () => {
     // Create a new project document with an auto-generated ID
     const newProjectRef = doc(projectRef);
     const projectId = newProjectRef.id;
-
+    //setdoc diye as always new ekta project create korlam
     await setDoc(newProjectRef, {
         creatorId: uid,
         coverPhoto: coverPhoto.value,
@@ -60,9 +61,12 @@ const createProject = async () => {
 };
 
 async function uploadPicture(projectId) {
+    //image file jeta upload hilo oita nilam
     const data = files.value?.item(0);
     if (data) {
+        //ekta new project storage reference create korlam.firebase e projectpictures naamer folder er under e ei project er id diye project er chobi ta save hobe
         const projectPictureRef = storageRef(storage, 'projectPictures/' + projectId + '/' + data.name);
+        //upload related beshirvag jinish firebase er  , documentation deikha korsi
         const { upload } = useStorageFile(projectPictureRef);
         await upload(data);
 
@@ -74,7 +78,7 @@ async function uploadPicture(projectId) {
 </script>
 <template>
     <div class="container">
-        <h1>Create New Project</h1>
+        <h1 class="gradient-text">Create New Project</h1>
 
         <form class="form" @submit.prevent="createProject">
 
@@ -93,7 +97,7 @@ async function uploadPicture(projectId) {
                                 Change</span>
                         </div>
                     </template>
-                    <template v-else>Change Profile Picture</template>
+                    <template v-else>Choose Project Image</template>
                 </button>
             </fieldset>
             <div class="form-group">
@@ -131,7 +135,17 @@ async function uploadPicture(projectId) {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f5f5f5;
+
+}
+
+h1.gradient-text {
+
+
+    background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #4a99f9 50%, #fdf8f9 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }
 
 .container h1 {

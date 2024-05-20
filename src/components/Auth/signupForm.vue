@@ -14,7 +14,7 @@
 <script setup>
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { db,userRef } from "@/firebaseConfig";
+import { userRef } from "@/firebaseConfig";
 import { ref } from "vue";
 
 const name = ref("");
@@ -25,26 +25,44 @@ const error = ref(null);
 async function signup() {
     try {
         const auth = getAuth();
-        
-        if(email.value.endsWith("@student.swin.edu.au") || email.value.endsWith("@swin.edu.au")) {
+
+        if (email.value.endsWith("@student.swin.edu.au") || email.value.endsWith("@swin.edu.au")) {
             console.log("Valid email");
         }
-        else{
+        else {
             error.value = "Invalid email";
+            return;
+        }
+        if (password.value.length < 8) {
+            error.value = "Password must be at least 8 characters";
+            return;
+        }
+        if (password.value.search(/[a-z]/) < 0) {
+            error.value = "Password must contain at least one lowercase letter";
+            return;
+        }
+        if (password.value.search(/[A-Z]/) < 0) {
+            error.value = "Password must contain at least one uppercase letter";
+            return;
+        }
+        if (password.value.search(/[0-9]/) < 0) {
+            error.value = "Password must contain at least one number";
             return;
         }
         const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
+
         await setDoc(doc(userRef, user.uid), {
             name: name.value,
             email: user.email,
         });
+
         name.value = "";
         email.value = "";
         password.value = "";
         error.value = null;
         window.location.href = "/profile";
-        // Redirect to a success page or show a success message
+
         console.log("User signed up successfully!");
     } catch (e) {
         console.error(e);
