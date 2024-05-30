@@ -160,7 +160,7 @@ h1.gradient-text {
     /* reduce the width of the form */
     margin: 0 auto;
     /* center the form horizontally */
-    background-color: rgb(170, 9, 9);
+    background-color: rgb(82, 76, 76);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);

@@ -5,11 +5,22 @@ import { ref } from 'vue';
 import { doc, getDocs, updateDoc } from '@firebase/firestore';
 import { useRouter } from 'vue-router';
 
+// Initialize a reactive reference to an empty array for storing all projects
 const projects = ref([]);
+
+// Initialize a reactive reference to an empty array for storing user's own projects
 const myProjects = ref([]);
+
+// Initialize a reactive reference to an empty array for storing ongoing projects
 const ongoingProjects = ref([]);
+
+// Get the authentication object from Firebase
 const auth = getAuth();
+
+// Get the unique ID of the currently logged in user
 const uid = auth.currentUser.uid;
+
+// Get the Vue Router instance for navigating between pages
 const router = useRouter();
 
 //shob projects fetch korbo
@@ -112,7 +123,7 @@ const createProject = () => {
 h1.gradient-text {
 
 
-  background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #a8cdf9 50%, #fdf8f9 100%);
+  background-image: -webkit-linear-gradient(0deg, #ffffff 0%, #aaceef 50%, #1b70f8 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -124,7 +135,7 @@ h1.gradient-text {
 h3.gradient-text {
 
 
-  background-image: -webkit-linear-gradient(0deg, #f8f4f4 0%, #d6e6f9 50%, #fdf8f9 100%);
+  background-image: -webkit-linear-gradient(10deg, #ffffff 0%, #aaceef 50%, #1b70f8 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
