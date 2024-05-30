@@ -8,6 +8,32 @@ import router from '@/router';
 const auth = getAuth();
 const uid = auth.currentUser?.uid;
 const userName = ref('');
+const currentPage = ref(1);
+const postsPerPage = ref(5);
+const totalPages = ref(0);
+const currentPosts = ref([]);
+
+
+const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+    currentPosts.value = posts.value.slice((currentPage.value - 1) * postsPerPage.value, currentPage.value * postsPerPage.value);
+};
+
+const previousPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+    currentPosts.value = posts.value.slice((currentPage.value - 1) * postsPerPage.value, currentPage.value * postsPerPage.value);
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+    }
+    currentPosts.value = posts.value.slice((currentPage.value - 1) * postsPerPage.value, currentPage.value * postsPerPage.value);
+};
 
 //ei functionn diye username ta fetch korlam jeta amader new comments e add korte help hobe
 const getUserName = async () => {
@@ -33,6 +59,10 @@ const getAllPostForThisProject = async () => {
     querySnapshot.forEach((doc) => {
         const postData = doc.data();
         if (postData.projectId === projectId) {
+            var liked = false;
+            if (postData.likes.includes(uid)) {
+                liked = true;
+            }
             posts.value.push(
                 {
                     id: doc.id,
@@ -45,10 +75,14 @@ const getAllPostForThisProject = async () => {
                     likes: postData.likes,
                     comments: postData.comments,
                     postTime: postData.postTime,
+                    liked: liked
                 },
             );
         }
     });
+    posts.value.sort((b, a) => new Date(a.postTime) - new Date(b.postTime));
+    totalPages.value = Math.ceil(posts.value.length / postsPerPage.value);
+    currentPosts.value = posts.value.slice(0, postsPerPage.value);
 }
 //ekhane function ta call korlam
 getAllPostForThisProject();
@@ -64,6 +98,8 @@ const dislike = async (postId) => {
         for (let i = 0; i < posts.value.length; i++) {
             if (posts.value[i].id === postId) {
                 posts.value[i].likesCount = postData.likesCount - 1;
+                posts.value[i].liked = false;
+                posts.value[i].likes = postData.likes.filter(id => id !== uid);
             }
         }
         await updateDoc(docRef, {
@@ -91,6 +127,8 @@ const like = async (postId) => {
         for (let i = 0; i < posts.value.length; i++) {
             if (posts.value[i].id === postId) {
                 posts.value[i].likesCount = postData.likesCount + 1;
+                posts.value[i].liked = true;
+                posts.value[i].likes.push(uid);
             }
         }
         // like dile jei change gula hobe database e shegula update korlam
@@ -140,7 +178,7 @@ const addComment = async () => {
 
         <div class="row mt-2">
             <div class="col">
-                <div v-for="post in posts" :key="post.id" class="card mt-2">
+                <div v-for="post in currentPosts" :key="post.id" class="card mt-2">
                     <div class="card-body">
                         <h5 class="text-black">{{ post.creatorName }} posted at {{ convertToTime(post.postTime) }}</h5>
                         <p>
@@ -148,7 +186,7 @@ const addComment = async () => {
                         </p>
                         <div class="d-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="thumbs-up-icon"
-                                @click="like(post.id)">
+                                :style="{ fill: post.liked ? '#0000FF' : '#808080' }" @click="like(post.id)">
                                 <path
                                     d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
                             </svg>
@@ -163,7 +201,23 @@ const addComment = async () => {
                         </div>
                     </div>
                 </div>
+
             </div>
+            <nav aria-label="Page navigation example ">
+                <ul class="pagination justify-content-center mt-5">
+                    <li class="page-item disabled">
+                        <a class="page-link" @click="previousPage" :disabled="currentPage.value === 1">Previous</a>
+                    </li>
+                    <li v-for="page in totalPages" :key="page"
+                        :class="{ 'page-item': true, 'active': currentPage === page }">
+                        <a class="page-link" @click="goToPage(page)">{{ page }}</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" @click="nextPage" :disabled="currentPage.value === totalPages">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         <!-- Comments Modal -->
@@ -228,6 +282,10 @@ const addComment = async () => {
 .comment-icon {
     width: 20px;
     height: 20px;
+    cursor: pointer;
+}
+
+.pagination:hover {
     cursor: pointer;
 }
 </style>

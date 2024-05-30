@@ -11,6 +11,19 @@ const ongoingProjects = ref([]);
 const auth = getAuth();
 const uid = auth.currentUser.uid;
 const router = useRouter();
+const searchResults = ref([]);
+const search = ref('');
+const searchProject = (searchText) => {
+  console.log(searchText);
+  search.value = searchText;
+  const lowerCaseSearchText = searchText.toLowerCase();
+  searchResults.value = projects.value.filter(project => {
+    const lowerCaseTitle = project.title.toLowerCase();
+    const lowerCaseSkillsNeeded = project.skillsNeeded.toLowerCase();
+    const lowerCaseDescription = project.description.toLowerCase();
+    return lowerCaseTitle.includes(lowerCaseSearchText) || lowerCaseSkillsNeeded.includes(lowerCaseSearchText) || lowerCaseDescription.includes(lowerCaseSearchText);
+  });
+};
 
 //shob projects fetch korbo
 const fetchAllProjects = async () => {
@@ -47,50 +60,84 @@ console.log(projects.value);
 const createProject = () => {
   router.push('/createProject');
 }
+
 </script>
 
 <template>
-  <div class="create-project-container">
-    <button @click="createProject" class="create-project-btn">Create Project</button>
-  </div>
-  <h1 class="gradient-text">My Projects</h1>
+  <div class="d-flex flex-row justify-content-between mt-3">
+    <div class="create-project-container">
+      <button @click="createProject" class="create-project-btn">Create Project</button>
+    </div>
+    <div>
+      <form class=" d-flex " role="search">
+        <input class="form-control me-2" type="search" placeholder="Search project" aria-label="Search"
+          v-model="searchText" @input="searchProject(searchText)">
+      </form>
+    </div>
 
-  <div class="container" v-if="myProjects.length != 0">
-    <div class="row">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in myProjects" :key="project.id">
-        <a :href="'project/' + project.id" class="card-link">
+  </div>
+
+  <div v-if="search.length != 0">
+    <h1 class=" gradient-text">Search Results</h1>
+
+    <div class="container" v-if="searchResults.length != 0">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in searchResults" :key="project.id">
+          <a :href="'project/' + project.id" class="card-link">
+            <div class="card mb-4 scaled-card">
+              <img :src="project.projectImage" class="card-img-top" alt="Project Image">
+              <div class="card-body">
+                <h5 class="card-title">{{ project.title }}</h5>
+                <p class="card-text">{{ project.description }}</p>
+                <p class="card-text">{{ project.skillsNeeded }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    <h1 class="gradient-text">My Projects</h1>
+
+    <div class="container" v-if="myProjects.length != 0">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in myProjects" :key="project.id">
+          <a :href="'project/' + project.id" class="card-link">
+            <div class="card mb-4 scaled-card">
+              <img :src="project.projectImage" class="card-img-top" alt="Project Image">
+              <div class="card-body">
+                <h5 class="card-title">{{ project.title }}</h5>
+                <p class="card-text">{{ project.description }}</p>
+
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="gradient-text">Ongoing Projects</h1>
+    <h3 class="gradient-text">Join a project to collaborate with other members!</h3>
+
+    <div class="container" v-if="ongoingProjects.length != 0">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in ongoingProjects" :key="project.id">
           <div class="card mb-4 scaled-card">
             <img :src="project.projectImage" class="card-img-top" alt="Project Image">
             <div class="card-body">
               <h5 class="card-title">{{ project.title }}</h5>
               <p class="card-text">{{ project.description }}</p>
+              <p class="card-text">{{ project.skillsNeeded }}</p>
             </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
 
-  <h1 class="gradient-text">Ongoing Projects</h1>
-  <h3 class="gradient-text">Join a project to collaborate with other members!</h3>
-
-  <div class="container" v-if="ongoingProjects.length != 0">
-    <div class="row">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="project in ongoingProjects" :key="project.id">
-        <div class="card mb-4 scaled-card">
-          <img :src="project.projectImage" class="card-img-top" alt="Project Image">
-          <div class="card-body">
-            <h5 class="card-title">{{ project.title }}</h5>
-            <p class="card-text">{{ project.description }}</p>
-            <p class="card-text">{{ project.skillsNeeded }}</p>
-          </div>
-
-          <div class="card-body">
-            <a :href="'join/' + project.id" class="card-link">
-              <button class="btn">
-                Join
-              </button>
-            </a>
+            <div class="card-body">
+              <a :href="'join/' + project.id" class="card-link">
+                <button class="btn">
+                  Join
+                </button>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -141,13 +188,10 @@ a {
   border-radius: 50px;
   background: rgb(11, 100, 244);
   color: rgb(255, 255, 255);
-  position: absolute;
-  top: 0.5;
-  right: 0;
-  margin: 20px;
+
 }
 
-.create-project-btn:hover {
+-->.create-project-btn:hover {
   background-color: #000408;
 }
 
