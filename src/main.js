@@ -10,7 +10,7 @@ import { VueFire, VueFireFirestoreOptionsAPI, VueFireAuth } from "vuefire";
 const app = createApp(App);
 app.use(VueFire,{firebaseApp,modules:[VueFireFirestoreOptionsAPI(),VueFireAuth()],});
 
-const user = await getCurrentUser();
+const user =  getCurrentUser();
 if (user) {
   console.log("User is logged in");
   console.log(user);
