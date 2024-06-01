@@ -3,8 +3,8 @@ import { firebaseApp } from "./firebaseConfig";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { getCurrentUser } from "vuefire";
-import { VueFire, VueFireFirestoreOptionsAPI, VueWeightAuth } from "vuefire";
+import { useCurrentUser, getCurrentUser } from "vuefire";
+import { VueFire, VueFireFirestoreOptionsAPI, VueFireAuth } from "vuefire";
 
 const app = createApp(App);
 app.use(VueFire, {
@@ -25,7 +25,7 @@ async function initializeApp() {
   router.beforeEach(async (to, from, next) => {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
     // Ensure user is fetched each time if needed or fetch here once and use closure to keep state
-    if (requiresHelp && !user) {
+    if (requiresAuth && !user) {
       next("/login");
     } else {
       next();
