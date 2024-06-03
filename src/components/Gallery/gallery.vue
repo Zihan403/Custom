@@ -56,11 +56,11 @@ h1.gradient-text {
     }
 .img-card {
     object-fit: cover;
-    height: 200px; /* Adjust as needed */
+    height: 200px; 
 }
 
 .card-content {
-    height: 150px; /* Adjust as needed */
+    height: 150px; 
     overflow: auto;
 }
 </style>

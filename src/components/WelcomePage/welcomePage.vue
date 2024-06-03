@@ -11,10 +11,9 @@
       </div>
     </div>
 
-    <!-- Featured Sections -->
-    <!-- Add your club logos, event listings, health resources, etc. -->
 
-    <!-- Footer -->
+
+
   </div>
 </template>
 
@@ -46,7 +45,7 @@ export default {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: rgba(0, 0, 0, 0.5); /* Fallback for older browsers */
+  background-color: rgba(0, 0, 0, 0.5);
   background-blend-mode: darken;
   position: relative;
   display: flex;

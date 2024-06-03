@@ -24,7 +24,7 @@ const getusername = async () => {
         console.log("No such document!");
     }
 }
-//function ta call korlam
+
 getusername();
 const createPost = async () => {
     await setDoc(doc(postRef), {

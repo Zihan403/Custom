@@ -36,7 +36,7 @@ const searchProject = (searchText) => {
   });
 };
 
-//shob projects fetch korbo
+
 const fetchAllProjects = async () => {
   const querySnapshot = await getDocs(projectRef);
   querySnapshot.forEach((doc) => {
@@ -55,8 +55,7 @@ const fetchAllProjects = async () => {
     };
 
     projects.value.push(project);
-    //ekhon shob projects theke dui bhag korbo , jegular ami member ba jegula ami banaisi ogula my projects e nibo ar bakigula ongoing e dhukabo
-
+    
     if (project.members.some(member => member.id === uid) || project.creatorId === uid) {
       myProjects.value.push(project);
     } else {

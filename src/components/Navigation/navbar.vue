@@ -61,11 +61,11 @@ const handleLogOut= async()=>{
 
 <style scoped>
 .logo {
-  width: 50px; /* Adjust as needed */
-  height: 50px; /* Adjust as needed */
+  width: 50px; /
+  height: 50px; /
 }
 .nav-link:hover {
-  background-color: #000000; /* Change this to the color you want when hovering */
-  color: #ffffff; /* Change this to the color you want for the text when hovering */
+  background-color: #000000; 
+  color: #ffffff; 
 }
 </style>

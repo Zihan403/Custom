@@ -61,12 +61,12 @@ const createProject = async () => {
 };
 
 async function uploadPicture(projectId) {
-    //image file jeta upload hilo oita nilam
+    
     const data = files.value?.item(0);
     if (data) {
-        //ekta new project storage reference create korlam.firebase e projectpictures naamer folder er under e ei project er id diye project er chobi ta save hobe
+        
         const projectPictureRef = storageRef(storage, 'projectPictures/' + projectId + '/' + data.name);
-        //upload related beshirvag jinish firebase er  , documentation deikha korsi
+        
         const { upload } = useStorageFile(projectPictureRef);
         await upload(data);
 
@@ -183,7 +183,7 @@ h1.gradient-text {
     border-radius: 5px;
     font-size: 16px;
     width: 100%;
-    /* make the input fields take up the full width of the form */
+   
 }
 
 .btn {

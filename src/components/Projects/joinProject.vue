@@ -65,7 +65,7 @@ const email = ref('');
 const skills = ref([]);
 const projects = ref([]);
 const contact = ref('');
-// user er data fetch korbe 
+
 const fetchUserData = async () => {
     const docRef = doc(userRef, uid);
     const docSnap = await getDoc(docRef);
@@ -82,7 +82,7 @@ const fetchUserData = async () => {
 }
 
 fetchUserData();
-//submit korle ei info gula shoho db te joinRequests naamer collection e new document save hobe
+
 const handleSubmit = async () => {
     if (shareProfile.value) {
         await setDoc(doc(joinRequestRef), {

@@ -10,14 +10,14 @@ const project = ref({});
 const auth = getAuth();
 const uid = auth.currentUser.uid;
 const router = useRouter();
-//check kortesi admin kina eta lagbe karon admin na hoile view and delete button gula dekhabo na
+
 const isAdmin = ref(false);
 const checkIfAdmin = async () => {
     const docRef = doc(projectRef, projectId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const projectData = docSnap.data();
-        //jodi current project er creator id and amar id same hoy tar mane ami admin 
+       
         if (projectData.creatorId === uid) {
             isAdmin.value = true;
         }
@@ -26,7 +26,7 @@ const checkIfAdmin = async () => {
     }
 }
 checkIfAdmin();
-//project er basic details fetch korlam
+
 const fetchProject = async () => {
     const docRef = doc(projectRef, projectId);
     const docSnap = await getDoc(docRef);
@@ -46,7 +46,7 @@ const fetchProject = async () => {
         console.log("No such document!");
     }
 }
-//just delete function call kore delete kore dilam
+
 const deleteProject = async () => {
     const docRef = doc(projectRef, projectId);
     await deleteDoc(docRef);

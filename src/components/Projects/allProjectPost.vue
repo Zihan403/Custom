@@ -111,19 +111,19 @@ const dislike = async (postId) => {
     }
 
 }
-//like deyar function
+
 const like = async (postId) => {
     const docRef = doc(postRef, postId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
         const postData = docSnap.data();
-        //ekhane check korbo je ei post er likes e amar id ase kina jodi thake tahole dislike korbo
+      
         if (postData.likes.includes(uid)) {
             await dislike(postId);
             return;
         }
-        // jodi na thake tahole like korbo , ref er value ta change kortesi
+        
         for (let i = 0; i < posts.value.length; i++) {
             if (posts.value[i].id === postId) {
                 posts.value[i].likesCount = postData.likesCount + 1;
@@ -131,7 +131,7 @@ const like = async (postId) => {
                 posts.value[i].likes.push(uid);
             }
         }
-        // like dile jei change gula hobe database e shegula update korlam
+        
         await updateDoc(docRef, {
             likesCount: postData.likesCount + 1,
 
@@ -142,31 +142,31 @@ const like = async (postId) => {
     }
 }
 
-// eta comment er modal show korbe
+
 const showCommentsModal = async (post) => {
     selectedPost.value = post;
     newComment.value = '';
 
 }
-//time ta convert korlam jate milliseconds na dekhay
+
 const convertToTime = (time) => {
     const date = new Date(time);
     return date.toLocaleString();
 }
-//comment add korbe
+
 const addComment = async () => {
-    //empty comment hoile return korbe
+   
     if (!newComment.value.trim()) {
         return;
     }
     console.log(userName);
     const postDocRef = doc(postRef, selectedPost.value.id);
-    //update doc er maddhome comment add korlam
+
     await updateDoc(postDocRef, {
         comments: arrayUnion({ userId: uid, userName: userName.value, comment: newComment.value, timestamp: new Date() }),
         commentsCount: selectedPost.value.commentsCount + 1
     });
-    //selected post er comments e new comment add korlam,variable er values change kortesi ekhane not database
+    
     selectedPost.value.comments.push({ userId: uid, userName: userName.value, comment: newComment.value, timestamp: new Date() });
     selectedPost.value.commentsCount++;
     newComment.value = '';
