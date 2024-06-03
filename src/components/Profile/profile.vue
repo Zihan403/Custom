@@ -102,7 +102,7 @@ async function uploadPicture() {
         <!-- Profile Picture Section -->
         <div class="text-center mb-4">
 
-          <img :src="profilePicture" alt="Profile Picture" class="rounded-circle img-fluid">
+          <img :src="profilePicture" alt="Profile Picture" class="rounded-circle img-fluid profile-picture">
           <div>
             <fieldset :disabled="!!uploadTask">
               <button type="button" @click="open({ accept: 'image/*', multiple: false })" class="btn btn-primary mt-3">
@@ -164,3 +164,9 @@ async function uploadPicture() {
     </div>
   </div>
 </template>
+<style scoped>
+.profile-picture {
+  width: 150px; /* Adjust the width as needed */
+  height: 150px; /* Adjust the height as needed */
+}
+</style>
